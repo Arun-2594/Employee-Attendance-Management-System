@@ -1,0 +1,28 @@
+/* DepartmentManagement.css */
+.department-management h2 {
+  margin-bottom: 2rem;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.department-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.department-table th {
+  background: linear-gradient(135deg, #34495e, #2c3e50);
+  color: white;
+  font-weight: 600;
+  padding: 1.2rem 1rem;
+}
+
+.department-form textarea {
+  min-height: 100px;
+  resize: vertical;
+}

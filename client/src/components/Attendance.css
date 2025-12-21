@@ -1,0 +1,351 @@
+/* Attendance.css */
+
+/* --- General Headings & Layout --- */
+
+.attendance-management h2 {
+  margin-bottom: 2rem;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.attendance-stats {
+  margin-bottom: 2.5rem;
+}
+
+/* ---------------------------------------------------- */
+/* --- Today's Attendance Stats Grid Improvement --- */
+/* ---------------------------------------------------- */
+
+.attendance-stats .stat-card h3 {
+  font-size: 1.2rem;
+  color: #34495e;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #ecf0f1;
+  padding-bottom: 0.5rem;
+}
+
+.attendance-overview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-top: 0;
+  justify-content: space-between;
+}
+
+.attendance-item {
+  flex: 1 1 200px;
+  display: block;
+  padding: 1.5rem;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s;
+  text-align: center;
+}
+
+.attendance-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+.attendance-item .label {
+  font-weight: 500;
+  color: #7f8c8d;
+  font-size: 1rem;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.attendance-item .value {
+  font-weight: 700;
+  font-size: 2.5rem;
+  padding: 0;
+  border-radius: 0;
+  background: none;
+  display: block;
+}
+
+/* --- Status Colors for Stats Cards (Numbers) --- */
+
+.attendance-item .value.present {
+  color: #27ae60;
+}
+
+.attendance-item .value.absent {
+  color: #c0392b;
+}
+
+.attendance-item .value.late {
+  color: #f39c12;
+}
+
+.attendance-item .value.half-day {
+  color: #3498db;
+}
+
+/* ---------------------------------------------------- */
+/* --- Search & Actions Container --- */
+/* ---------------------------------------------------- */
+
+.search-add-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.search-box {
+  flex-grow: 1;
+  max-width: 300px;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #bdc3c7;
+  border-radius: 8px;
+  transition: border-color 0.3s;
+}
+
+.search-box input:focus {
+  border-color: #3498db;
+  outline: none;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+/* ---------------------------------------------------- */
+/* --- Table Styling --- */
+/* ---------------------------------------------------- */
+
+.attendance-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+  background-color: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.attendance-table th {
+  background: linear-gradient(135deg, #34495e, #2c3e50);
+  color: white;
+  font-weight: 600;
+  padding: 1rem;
+  text-align: left;
+}
+
+.attendance-table td {
+  padding: 1rem;
+  vertical-align: middle;
+  border-bottom: 1px solid #ecf0f1;
+}
+
+.attendance-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* 💡 CRITICAL: Row coloring based on status */
+
+.attendance-table tbody tr.attendance-row {
+  transition: background-color 0.2s;
+}
+
+.attendance-table tbody tr.status-present {
+  background-color: #f0fff4;
+  /* Very light green */
+}
+
+.attendance-table tbody tr.status-late {
+  background-color: #fffdf0;
+  /* Very light yellow/cream */
+}
+
+.attendance-table tbody tr.status-half-day {
+  background-color: #f0f8ff;
+  /* Very light blue */
+}
+
+.attendance-table tbody tr.status-absent {
+  background-color: #fff0f0;
+  /* Very light red */
+}
+
+
+/* Adjust hover to be subtle on colored rows */
+.attendance-table tbody tr:hover {
+  background-color: #e6e6e6;
+  /* Base hover color */
+}
+
+.attendance-table tbody tr.status-present:hover {
+  background-color: #e0f2e8;
+  /* Slightly darker green hover */
+}
+
+.attendance-table tbody tr.status-late:hover {
+  background-color: #fcf9e0;
+  /* Slightly darker yellow hover */
+}
+
+.attendance-table tbody tr.status-half-day:hover {
+  background-color: #e0f0fb;
+  /* Slightly darker blue hover */
+}
+
+.attendance-table tbody tr.status-absent:hover {
+  background-color: #fbe6e6;
+  /* Slightly darker red hover */
+}
+
+/* ---------------------------------------------------- */
+/* --- Button Styling (Unchanged) --- */
+/* ---------------------------------------------------- */
+
+.add-btn {
+  background: linear-gradient(135deg, #2ecc71, #27ae60);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+
+.add-btn:hover {
+  background: linear-gradient(135deg, #27ae60, #209d57);
+  transform: translateY(-1px);
+}
+
+.export-btn {
+  background: linear-gradient(135deg, #f39c12, #e67e22);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+
+.export-btn:hover {
+  background: linear-gradient(135deg, #e67e22, #d35400);
+  transform: translateY(-1px);
+}
+
+.edit-btn {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  margin-right: 5px;
+  transition: background-color 0.2s;
+}
+
+.edit-btn:hover {
+  background-color: #2980b9;
+}
+
+.delete-btn {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+.delete-btn:hover {
+  background-color: #c0392b;
+}
+
+/* ---------------------------------------------------- */
+/* --- Status Badges (The colored text cells in the table) --- */
+/* ---------------------------------------------------- */
+
+.status-badge {
+  display: inline-block;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  min-width: 70px;
+  text-align: center;
+}
+
+.status-badge.present {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status-badge.absent {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.status-badge.late {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.status-badge.half-day {
+  background-color: #d1ecf1;
+  color: #0c5460;
+}
+
+/* ---------------------------------------------------- */
+/* --- Utility & Responsiveness --- */
+/* ---------------------------------------------------- */
+
+.table-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  color: #7f8c8d;
+  font-size: 0.9rem;
+}
+
+.no-data {
+  text-align: center;
+  color: #7f8c8d;
+  padding: 2rem 0 !important;
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
+  .attendance-overview {
+    justify-content: center;
+  }
+
+  .attendance-item {
+    flex: 1 1 45%;
+  }
+
+  .search-add-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-box {
+    max-width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
