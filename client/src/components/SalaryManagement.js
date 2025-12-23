@@ -1,5 +1,6 @@
 // components/SalaryManagement.js
 import React, { useState, useEffect } from 'react';
+import API from "../api";
 import './SalaryManagement.css';
 
 const SalaryManagement = () => {
@@ -26,13 +27,13 @@ const SalaryManagement = () => {
   const fetchSalaries = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/salaries', {
+      const response = await API.get('/api/salaries', {
         headers: {
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`
         }
       });
-      
-      const data = await response.json();
+
+      const data = response.data;
       if (data.success) {
         setSalaries(data.data);
       }
@@ -44,13 +45,13 @@ const SalaryManagement = () => {
   const fetchEmployees = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/employees', {
+      const response = await API.get('/api/employees', {
         headers: {
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`
         }
       });
-      
-      const data = await response.json();
+
+      const data = response.data;
       if (data.success) {
         setEmployees(data.data);
       }
@@ -87,16 +88,13 @@ const SalaryManagement = () => {
       };
 
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/salaries', {
-        method: 'POST',
+      const response = await API.post('/api/salaries', salaryData, {
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(salaryData)
       });
 
-      const data = await response.json();
+      const data = response.data;
       
       if (data.success) {
         setSalaries(prev => [data.data, ...prev]);

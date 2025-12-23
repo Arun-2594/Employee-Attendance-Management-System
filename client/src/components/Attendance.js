@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import API from "../api";
 import './Attendance.css';
 
 // **FIX: Helper Function for Consistent Local Date String**
@@ -117,17 +118,17 @@ const Attendance = () => {
   const fetchAttendance = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/attendance', {
+      const response = await API.get("/api/attendance", {
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          'Authorization': `Bearer ${token}`,
+        },
       });
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       
-      const data = await response.json();
+      const data = response.data;
       if (data.success) {
         setAttendance(data.data);
       } else {
@@ -142,17 +143,17 @@ const Attendance = () => {
   const fetchEmployees = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/employees', {
+      const response = await API.get("/api/employees", {
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          'Authorization': `Bearer ${token}`,
+        },
       });
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       
-      const data = await response.json();
+      const data = response.data;
       if (data.success) {
         setEmployees(data.data);
       }
@@ -224,21 +225,22 @@ const Attendance = () => {
       }
 
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/attendance/mark', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
+      const response = await API.post(
+        "/api/attendance/mark", 
+        {
           ...formData,
           employeeName: selectedEmployee.name,
           department: selectedEmployee.department,
           date: new Date(formData.date).toISOString(),
           checkIn: formData.checkIn ? new Date(`${formData.date}T${formData.checkIn}`).toISOString() : null,
           checkOut: formData.checkOut ? new Date(`${formData.date}T${formData.checkOut}`).toISOString() : null
-        })
-      });
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        }
+      );
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -290,25 +292,26 @@ const Attendance = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/attendance/${selectedRecord._id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
+      const response = await API.put(
+        `/api/attendance/${selectedRecord._id}`, 
+        {
           ...formData,
           date: new Date(formData.date).toISOString(),
           checkIn: formData.checkIn ? new Date(`${formData.date}T${formData.checkIn}`).toISOString() : null,
           checkOut: formData.checkOut ? new Date(`${formData.date}T${formData.checkOut}`).toISOString() : null
-        })
-      });
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data = await response.json();
+      const data = response.data;
       
       if (data.success) {
         setAttendance(prev => 
@@ -340,10 +343,9 @@ const Attendance = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/attendance/${attendanceId}`, {
-        method: 'DELETE',
+      const response = await API.delete(`/api/attendance/${attendanceId}`, {
         headers: {
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         }
       });
 
@@ -351,7 +353,7 @@ const Attendance = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data = await response.json();
+      const data = response.data;
       
       if (data.success) {
         setAttendance(prev => prev.filter(record => record._id !== attendanceId));

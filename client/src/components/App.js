@@ -1,14 +1,15 @@
 // src/App.js
 import React, { useState, useEffect } from "react";
-import Login from "./components/Login";
-import Dashboard from "./components/Dashboard";
-import EmployeeManagement from "./components/EmployeeManagement";
-import DepartmentManagement from "./components/DepartmentManagement";
-import LeaveManagement from "./components/LeaveManagement";
-import SalaryManagement from "./components/SalaryManagement";
-import Settings from "./components/Settings";
-import Attendance from "./components/Attendance";
-import ApplyLeave from "./components/ApplyLeave";
+import Login from "./Login";
+import Dashboard from "./Dashboard";
+import EmployeeManagement from "./EmployeeManagement";
+import DepartmentManagement from "./DepartmentManagement";
+import LeaveManagement from "./LeaveManagement";
+import SalaryManagement from "./SalaryManagement";
+import Settings from "./Settings";
+import Attendance from "./Attendance";
+import ApplyLeave from "./ApplyLeave";
+import API from "../api";
 import "./App.css";
 
 function App() {
@@ -65,13 +66,13 @@ function App() {
     try {
       const token = localStorage.getItem("token");
       if (token) {
-        const response = await fetch("http://localhost:5000/api/auth/check", {
+        const response = await API.get("/api/auth/check", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
-        const data = await response.json();
+        const data = response.data();
         if (data.success && data.authenticated) {
           setIsLoggedIn(true);
           setUser(data.user);

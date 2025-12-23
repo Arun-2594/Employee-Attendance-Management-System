@@ -1,5 +1,6 @@
 // components/LeaveManagement.js
 import React, { useState, useEffect } from 'react';
+import API from "../api";
 import './LeaveManagement.css';
 
 const LeaveManagement = () => {
@@ -48,13 +49,13 @@ const LeaveManagement = () => {
   const fetchLeaves = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/leaves', {
+      const response = await API.get('/api/leaves', {
         headers: {
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`
         }
       });
-      
-      const data = await response.json();
+
+      const data = response.data;
       if (data.success) {
         setLeaves(data.data);
       } else {
@@ -69,13 +70,13 @@ const LeaveManagement = () => {
   const fetchEmployees = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/employees', {
+      const response = await API.get('/api/employees', {
         headers: {
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`
         }
       });
-      
-      const data = await response.json();
+
+      const data = response.data;
       if (data.success) {
         setEmployees(data.data);
       }
@@ -87,13 +88,13 @@ const LeaveManagement = () => {
   const fetchLeaveStats = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/leaves/stats/overview', {
+      const response = await API.get('/api/leaves/stats/overview', {
         headers: {
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`
         }
       });
-      
-      const data = await response.json();
+
+      const data = response.data;
       if (data.success) {
         setLeaveStats(data.data);
       }
@@ -133,20 +134,20 @@ const LeaveManagement = () => {
     
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/leaves/${selectedLeave._id}/status`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ 
+      const response = await API.put(`/api/leaves/${selectedLeave._id}/status`,
+        {
           status,
-          approvedBy: 'System Admin',
+          approvedBy: "System Admin",
           comments: `Leave ${status.toLowerCase()} by System Admin`
-        })
-      });
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
 
-      const data = await response.json();
+      const data = response.data;
       
       if (data.success) {
         setLeaves(prev => 
@@ -193,16 +194,13 @@ const LeaveManagement = () => {
       };
 
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/leaves', {
-        method: 'POST',
+      const response = await API.post('/api/leaves', leaveData, {
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(leaveData)
+          Authorization: `Bearer ${token}`
+        }
       });
 
-      const data = await response.json();
+      const data = response.data;
       
       if (data.success) {
         setLeaves(prev => [data.data, ...prev]);
@@ -242,14 +240,13 @@ const LeaveManagement = () => {
     
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/leaves/${leaveId}`, {
-        method: 'DELETE',
+      const response = await API.delete(`/api/leaves/${leaveId}`, {
         headers: {
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`
         }
       });
 
-      const data = await response.json();
+      const data = response.data;
       
       if (data.success) {
         setLeaves(prev => prev.filter(leave => leave._id !== leaveId));

@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { auth } from '../firebase/config';
+import API from "../api";
 import './Login.css';
 
 const Login = ({ onLogin }) => {
@@ -40,15 +41,12 @@ const Login = ({ onLogin }) => {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
+      const response = await API.post('/api/auth/login', {
+        email,
+        password
       });
 
-      const data = await response.json();
+      const data = response.data;
 
       if (data.success) {
         onLogin(data.user, data.token);
@@ -88,21 +86,15 @@ const Login = ({ onLogin }) => {
       const user = result.user;
       const idToken = await user.getIdToken();
 
-      const response = await fetch('http://localhost:5000/api/auth/google', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          uid: user.uid,
-          email: user.email,
-          name: user.displayName,
-          photoURL: user.photoURL,
-          idToken: idToken,
-        }),
+      const response = await API.post('/api/auth/google', {
+        uid: user.uid,
+        email: user.email,
+        name: user.displayName,
+        photoURL: user.photoURL,
+        idToken: idToken
       });
 
-      const data = await response.json();
+      const data = response.data;
 
       if (data.success) {
         onLogin(data.user, data.token);

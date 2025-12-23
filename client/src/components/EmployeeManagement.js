@@ -1,5 +1,6 @@
 // components/EmployeeManagement.js
 import React, { useState, useEffect } from 'react';
+import API from "../api";
 import './EmployeeManagement.css';
 
 const EmployeeManagement = () => {
@@ -53,13 +54,13 @@ const EmployeeManagement = () => {
   const fetchEmployees = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/employees', {
+      const response = await API.get('/api/employees', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
       
-      const data = await response.json();
+      const data = response.data;
       if (data.success) {
         setEmployees(data.data);
       } else {
@@ -175,16 +176,13 @@ const EmployeeManagement = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/employees', {
-        method: 'POST',
+      const response = await API.post('/api/employees', formData, {
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(formData)
       });
 
-      const data = await response.json();
+      const data = response.data;
       
       if (data.success) {
         setEmployees(prev => [...prev, data.data]);
@@ -214,16 +212,13 @@ const EmployeeManagement = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/employees/${selectedEmployee._id}`, {
-        method: 'PUT',
+      const response = await API.put(`/api/employees/${selectedEmployee._id}`, formData,{
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify(formData)
       });
 
-      const data = await response.json();
+      const data = response.data;
       
       if (data.success) {
         setEmployees(prev => 
@@ -263,22 +258,20 @@ const EmployeeManagement = () => {
       const token = localStorage.getItem('token');
       
       // Delete employee's attendance records
-      await fetch(`http://localhost:5000/api/attendance/employee/${employeeToDelete.employeeId}`, {
-        method: 'DELETE',
+      await API.delete(`/api/attendance/employee/${employeeToDelete.employeeId}`, {
         headers: {
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`
         }
       });
 
       // Delete employee
-      const response = await fetch(`http://localhost:5000/api/employees/${employeeId}`, {
-        method: 'DELETE',
+      const response = await API.delete(`/api/employees/${employeeId}`, {
         headers: {
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`
         }
       });
 
-      const data = await response.json();
+      const data = response.data;
       
       if (data.success) {
         setEmployees(prev => prev.filter(emp => emp._id !== employeeId));
@@ -318,16 +311,13 @@ const EmployeeManagement = () => {
         payPeriod: salaryData.payPeriod
       };
 
-      const response = await fetch('http://localhost:5000/api/salaries', {
-        method: 'POST',
+      const response = await API.post('/api/salaries', salaryRecord, {
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify(salaryRecord)
       });
 
-      const data = await response.json();
+      const data = response.data;
       
       if (data.success) {
         alert('Salary added successfully!');
@@ -359,16 +349,15 @@ const EmployeeManagement = () => {
       };
 
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/leaves', {
+      const response = await API.post('/api/leaves', leaveData, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`
         },
         body: JSON.stringify(leaveData)
       });
 
-      const data = await response.json();
+      const data = response.data;
       
       if (data.success) {
         alert('Leave application submitted successfully!');

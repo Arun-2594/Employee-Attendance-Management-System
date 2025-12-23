@@ -1,5 +1,6 @@
 // components/Dashboard.js
 import React, { useState, useEffect } from "react";
+import API from "../api";
 import "./Dashboard.css";
 
 const Dashboard = () => {
@@ -29,7 +30,7 @@ const Dashboard = () => {
     const [isVisible, setIsVisible] = useState(false);
 
     return (
-      <div 
+      <div
         className="tooltip-container"
         onMouseEnter={() => setIsVisible(true)}
         onMouseLeave={() => setIsVisible(false)}
@@ -37,11 +38,7 @@ const Dashboard = () => {
         onBlur={() => setIsVisible(false)}
       >
         {children}
-        {isVisible && (
-          <div className="tooltip">
-            {content}
-          </div>
-        )}
+        {isVisible && <div className="tooltip">{content}</div>}
       </div>
     );
   };
@@ -88,46 +85,25 @@ const Dashboard = () => {
       // Fetch all data with error handling
       const [employeesRes, departmentsRes, attendanceRes, leavesRes] =
         await Promise.all([
-          fetch("http://localhost:5000/api/employees", {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
+          API.get("/api/employees", {
+            headers: { Authorization: `Bearer ${token}` },
           }),
-          fetch("http://localhost:5000/api/departments", {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
+          API.get("/api/departments", {
+            headers: { Authorization: `Bearer ${token}` },
           }),
-          fetch("http://localhost:5000/api/attendance/today", {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
+          API.get("/api/attendance/today", {
+            headers: { Authorization: `Bearer ${token}` },
           }),
-          fetch("http://localhost:5000/api/leaves", {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
+          API.get("/api/leaves", {
+            headers: { Authorization: `Bearer ${token}` },
           }),
         ]);
 
-      // Check if responses are ok
-      if (!employeesRes.ok) throw new Error("Failed to fetch employees");
-      if (!departmentsRes.ok) throw new Error("Failed to fetch departments");
-      if (!attendanceRes.ok) console.warn("Failed to fetch attendance data");
-      if (!leavesRes.ok) console.warn("Failed to fetch leaves data");
+      const employeesData = employeesRes.data;
+      const departmentsData = departmentsRes.data;
+      const attendanceData = attendanceRes.data || { success: false, data: [] };
+      const leavesData = leavesRes.data || { success: false, data: [] };
 
-      const employeesData = await employeesRes.json();
-      const departmentsData = await departmentsRes.json();
-      const attendanceData = attendanceRes.ok
-        ? await attendanceRes.json()
-        : { success: false, data: [] };
-      const leavesData = leavesRes.ok
-        ? await leavesRes.json()
-        : { success: false, data: [] };
 
       // Validate data structure
       if (!employeesData.success || !departmentsData.success) {
@@ -234,10 +210,10 @@ const Dashboard = () => {
   // Format numbers for display (compact)
   const formatNumberForDisplay = (number) => {
     if (number >= 1000000) {
-      return (number / 1000000).toFixed(1) + 'M';
+      return (number / 1000000).toFixed(1) + "M";
     }
     if (number >= 1000) {
-      return (number / 1000).toFixed(1) + 'K';
+      return (number / 1000).toFixed(1) + "K";
     }
     return number.toString();
   };
@@ -245,10 +221,10 @@ const Dashboard = () => {
   // Format currency for display (compact)
   const formatCurrencyForDisplay = (amount) => {
     if (amount >= 10000000) {
-      return '₹' + (amount / 10000000).toFixed(1) + 'Cr';
+      return "₹" + (amount / 10000000).toFixed(1) + "Cr";
     }
     if (amount >= 100000) {
-      return '₹' + (amount / 100000).toFixed(1) + 'L';
+      return "₹" + (amount / 100000).toFixed(1) + "L";
     }
     return new Intl.NumberFormat("en-IN", {
       style: "currency",
@@ -360,7 +336,11 @@ const Dashboard = () => {
           <div className="stat-icon">👥</div>
           <div className="stat-content">
             <h3>Total Employees</h3>
-            <Tooltip content={`Full count: ${formatFullNumber(dashboardData.totalEmployees)}`}>
+            <Tooltip
+              content={`Full count: ${formatFullNumber(
+                dashboardData.totalEmployees
+              )}`}
+            >
               <p className="stat-number">
                 {formatNumberForDisplay(dashboardData.totalEmployees)}
               </p>
@@ -375,7 +355,11 @@ const Dashboard = () => {
           <div className="stat-icon">🏢</div>
           <div className="stat-content">
             <h3>Total Departments</h3>
-            <Tooltip content={`Full count: ${formatFullNumber(dashboardData.totalDepartments)}`}>
+            <Tooltip
+              content={`Full count: ${formatFullNumber(
+                dashboardData.totalDepartments
+              )}`}
+            >
               <p className="stat-number">
                 {formatNumberForDisplay(dashboardData.totalDepartments)}
               </p>
@@ -390,7 +374,11 @@ const Dashboard = () => {
           <div className="stat-icon">💰</div>
           <div className="stat-content">
             <h3>Monthly Pay</h3>
-            <Tooltip content={`Full amount: ${formatFullCurrency(dashboardData.monthlyPay)}`}>
+            <Tooltip
+              content={`Full amount: ${formatFullCurrency(
+                dashboardData.monthlyPay
+              )}`}
+            >
               <p className="stat-number">
                 {formatCurrencyForDisplay(dashboardData.monthlyPay)}
               </p>
@@ -423,9 +411,15 @@ const Dashboard = () => {
               <h4>Present</h4>
             </div>
             <div className="attendance-content">
-              <Tooltip content={`Full count: ${formatFullNumber(dashboardData.attendanceStats.present)}`}>
+              <Tooltip
+                content={`Full count: ${formatFullNumber(
+                  dashboardData.attendanceStats.present
+                )}`}
+              >
                 <p className="attendance-number present">
-                  {formatNumberForDisplay(dashboardData.attendanceStats.present)}
+                  {formatNumberForDisplay(
+                    dashboardData.attendanceStats.present
+                  )}
                 </p>
               </Tooltip>
               <div className="attendance-subtext">
@@ -447,7 +441,11 @@ const Dashboard = () => {
               <h4>Absent</h4>
             </div>
             <div className="attendance-content">
-              <Tooltip content={`Full count: ${formatFullNumber(dashboardData.attendanceStats.absent)}`}>
+              <Tooltip
+                content={`Full count: ${formatFullNumber(
+                  dashboardData.attendanceStats.absent
+                )}`}
+              >
                 <p className="attendance-number absent">
                   {formatNumberForDisplay(dashboardData.attendanceStats.absent)}
                 </p>
@@ -471,7 +469,11 @@ const Dashboard = () => {
               <h4>Late</h4>
             </div>
             <div className="attendance-content">
-              <Tooltip content={`Full count: ${formatFullNumber(dashboardData.attendanceStats.late)}`}>
+              <Tooltip
+                content={`Full count: ${formatFullNumber(
+                  dashboardData.attendanceStats.late
+                )}`}
+              >
                 <p className="attendance-number late">
                   {formatNumberForDisplay(dashboardData.attendanceStats.late)}
                 </p>
@@ -495,9 +497,15 @@ const Dashboard = () => {
               <h4>Half Day</h4>
             </div>
             <div className="attendance-content">
-              <Tooltip content={`Full count: ${formatFullNumber(dashboardData.attendanceStats.halfDay)}`}>
+              <Tooltip
+                content={`Full count: ${formatFullNumber(
+                  dashboardData.attendanceStats.halfDay
+                )}`}
+              >
                 <p className="attendance-number half-day">
-                  {formatNumberForDisplay(dashboardData.attendanceStats.halfDay)}
+                  {formatNumberForDisplay(
+                    dashboardData.attendanceStats.halfDay
+                  )}
                 </p>
               </Tooltip>
               <div className="attendance-subtext">
@@ -525,7 +533,11 @@ const Dashboard = () => {
               <h4>Leave Applied</h4>
             </div>
             <div className="leave-content">
-              <Tooltip content={`Full count: ${formatFullNumber(dashboardData.leaveStats.applied)}`}>
+              <Tooltip
+                content={`Full count: ${formatFullNumber(
+                  dashboardData.leaveStats.applied
+                )}`}
+              >
                 <p className="leave-number applied">
                   {formatNumberForDisplay(dashboardData.leaveStats.applied)}
                 </p>
@@ -540,7 +552,11 @@ const Dashboard = () => {
               <h4>Leave Approved</h4>
             </div>
             <div className="leave-content">
-              <Tooltip content={`Full count: ${formatFullNumber(dashboardData.leaveStats.approved)}`}>
+              <Tooltip
+                content={`Full count: ${formatFullNumber(
+                  dashboardData.leaveStats.approved
+                )}`}
+              >
                 <p className="leave-number approved">
                   {formatNumberForDisplay(dashboardData.leaveStats.approved)}
                 </p>
@@ -564,7 +580,11 @@ const Dashboard = () => {
               <h4>Leave Pending</h4>
             </div>
             <div className="leave-content">
-              <Tooltip content={`Full count: ${formatFullNumber(dashboardData.leaveStats.pending)}`}>
+              <Tooltip
+                content={`Full count: ${formatFullNumber(
+                  dashboardData.leaveStats.pending
+                )}`}
+              >
                 <p className="leave-number pending">
                   {formatNumberForDisplay(dashboardData.leaveStats.pending)}
                 </p>
@@ -579,7 +599,11 @@ const Dashboard = () => {
               <h4>Leave Rejected</h4>
             </div>
             <div className="leave-content">
-              <Tooltip content={`Full count: ${formatFullNumber(dashboardData.leaveStats.rejected)}`}>
+              <Tooltip
+                content={`Full count: ${formatFullNumber(
+                  dashboardData.leaveStats.rejected
+                )}`}
+              >
                 <p className="leave-number rejected">
                   {formatNumberForDisplay(dashboardData.leaveStats.rejected)}
                 </p>

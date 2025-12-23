@@ -1,5 +1,6 @@
 // components/DepartmentManagement.js
 import React, { useState, useEffect } from 'react';
+import API from "../api";
 import './DepartmentManagement.css';
 
 const DepartmentManagement = () => {
@@ -25,13 +26,13 @@ const DepartmentManagement = () => {
   const fetchDepartments = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/departments', {
+      const response = await API.get('/api/departments', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
       
-      const data = await response.json();
+      const data = response.data;
       if (data.success) {
         setDepartments(data.data);
       } else {
@@ -48,13 +49,13 @@ const DepartmentManagement = () => {
   const fetchEmployees = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/employees', {
+      const response = await API.get('/api/employees', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
       
-      const data = await response.json();
+      const data = response.data;
       if (data.success) {
         setEmployees(data.data);
       }
@@ -77,16 +78,15 @@ const DepartmentManagement = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/departments', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(formData)
-      });
-
-      const data = await response.json();
+      const response = await API.post("/api/departments", 
+        formData,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        }
+      );
+      const data = response.data;
       
       if (data.success) {
         setDepartments(prev => [...prev, data.data]);
@@ -122,16 +122,13 @@ const DepartmentManagement = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/departments/${selectedDepartment._id}`, {
-        method: 'PUT',
+      const response = await API.put(`/api/departments/${selectedDepartment._id}`, formData, {
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify(formData)
       });
 
-      const data = await response.json();
+      const data = response.data;
       
       if (data.success) {
         setDepartments(prev => 
@@ -171,14 +168,13 @@ const DepartmentManagement = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/departments/${departmentId}`, {
-        method: 'DELETE',
+      const response = await API.delete(`/api/departments/${departmentId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
-        }
+        },
       });
 
-      const data = await response.json();
+      const data = response.data;
       
       if (data.success) {
         setDepartments(prev => prev.filter(dept => dept._id !== departmentId));

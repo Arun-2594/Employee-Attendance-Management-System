@@ -1,5 +1,6 @@
 // components/ApplyLeave.js
 import React, { useState, useEffect } from 'react';
+import API from "../api";
 import './ApplyLeave.css';
 
 const ApplyLeave = () => {
@@ -23,7 +24,7 @@ const ApplyLeave = () => {
   const fetchEmployees = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/employees', {
+      const response = await API.get('/api/employees', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -78,16 +79,14 @@ const ApplyLeave = () => {
       };
 
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/leaves', {
+      const response = await API.post('/api/leaves', leaveData, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify(leaveData)
       });
 
-      const data = await response.json();
+      const data = response.data;
       
       if (data.success) {
         setSuccess('Leave application submitted successfully!');
