@@ -1,109 +1,100 @@
 // server/server.js
-const express = require("express");
-const mongoose = require("mongoose");
-const cors = require("cors");
-require("dotenv").config();
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+require('dotenv').config();
 
 const app = express();
 
-/* =========================
-   CORS CONFIGURATION
-   ========================= */
+/* ================================
+   CORS CONFIGURATION (IMPORTANT)
+================================ */
 const allowedOrigins = [
-  "https://employee-attendance-management-system-beta.vercel.app",
-  "http://localhost:3000"
+  'http://localhost:3000',
+  'http://localhost:5173',
+  'https://employee-attendance-management-syst-beta.vercel.app',
 ];
 
 app.use(
   cors({
     origin: function (origin, callback) {
-      // allow requests with no origin (Postman, mobile apps)
+      // Allow requests with no origin (Postman, mobile apps)
       if (!origin) return callback(null, true);
 
       if (allowedOrigins.includes(origin)) {
-        callback(null, true);
+        return callback(null, true);
       } else {
-        callback(new Error("Not allowed by CORS"));
+        return callback(
+          new Error('CORS policy blocked this origin: ' + origin),
+          false
+        );
       }
     },
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
   })
 );
 
-// Handle preflight requests
-app.options("*", cors());
-
-/* =========================
-   MIDDLEWARE
-   ========================= */
 app.use(express.json());
 
-/* =========================
+/* ================================
    MONGODB CONNECTION
-   ========================= */
-const MONGODB_URI =
-  process.env.MONGODB_URI ||
-  "mongodb://localhost:27017/employee-attendance";
+================================ */
+const MONGODB_URI = process.env.MONGODB_URI;
 
 mongoose
   .connect(MONGODB_URI, {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
   })
   .then(() => {
-    console.log("✅ MongoDB connected successfully");
-    console.log("📦 Database:", mongoose.connection.name);
+    console.log('✅ MongoDB connected');
   })
   .catch((err) => {
-    console.error("❌ MongoDB connection error:", err.message);
-    process.exit(1);
+    console.error('❌ MongoDB connection error:', err.message);
   });
 
-/* =========================
+/* ================================
    ROUTES
-   ========================= */
-const authRoutes = require("./routes/authRoutes");
-const employeeRoutes = require("./routes/employeeRoutes");
-const departmentRoutes = require("./routes/departmentRoutes");
-const leaveRoutes = require("./routes/leaveRoutes");
-const salaryRoutes = require("./routes/salaryRoutes");
-const attendanceRoutes = require("./routes/attendanceRoutes");
+================================ */
+const authRoutes = require('./routes/authRoutes');
+const employeeRoutes = require('./routes/employeeRoutes');
+const departmentRoutes = require('./routes/departmentRoutes');
+const leaveRoutes = require('./routes/leaveRoutes');
+const salaryRoutes = require('./routes/salaryRoutes');
+const attendanceRoutes = require('./routes/attendanceRoutes');
 
-app.use("/api/auth", authRoutes);
-app.use("/api/employees", employeeRoutes);
-app.use("/api/departments", departmentRoutes);
-app.use("/api/leaves", leaveRoutes);
-app.use("/api/salaries", salaryRoutes);
-app.use("/api/attendance", attendanceRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/employees', employeeRoutes);
+app.use('/api/departments', departmentRoutes);
+app.use('/api/leaves', leaveRoutes);
+app.use('/api/salaries', salaryRoutes);
+app.use('/api/attendance', attendanceRoutes);
 
-/* =========================
-   DEFAULT ROUTES
-   ========================= */
-app.get("/", (req, res) => {
+/* ================================
+   ROOT & HEALTH CHECK
+================================ */
+app.get('/', (req, res) => {
   res.json({
-    message: "Employee Attendance Management System API",
-    status: "Running",
-    version: "1.0.0"
+    message: 'Employee Attendance Management System API',
+    version: '1.0.0',
+    status: 'Running',
   });
 });
 
-// Health check
-app.get("/api/health", (req, res) => {
+app.get('/api/health', (req, res) => {
   res.json({
-    status: "OK",
-    timestamp: new Date().toISOString(),
+    status: 'OK',
     database:
-      mongoose.connection.readyState === 1
-        ? "Connected"
-        : "Disconnected"
+      mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected',
+    time: new Date().toISOString(),
   });
 });
 
-/* =========================
-   SERVER START
-   ========================= */
+/* ================================
+   START SERVER
+================================ */
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
