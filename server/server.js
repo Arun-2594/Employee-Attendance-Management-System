@@ -11,11 +11,7 @@ const app = express();
 ======================= */
 const allowedOrigins = [
   'http://localhost:3000',
-  'http://127.0.0.1:3000',
-  'https://employee-attendance-management-syst-ashy.vercel.app',
   'https://employee-attendance-management-system-7muj.vercel.app',
-  'https://employee-attendance-man-git-845d53-arun2594tinku-1360s-projects.vercel.app',
-  'https://employee-attendance-management-system-uv23-307hvt5ud.vercel.app'
 ];
 
 app.use(cors({
