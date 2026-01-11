@@ -1,36 +1,45 @@
 // server/server.js
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-require('dotenv').config();
+const express = require("express");
+const mongoose = require("mongoose");
+const cors = require("cors");
+require("dotenv").config();
 
 const app = express();
 
 /* =======================
-   CORS CONFIG (IMPORTANT)
+   CORS CONFIG (PERMANENT)
 ======================= */
+
+// ✅ ONLY keep real frontend domains
 const allowedOrigins = [
-  'http://localhost:3000',
-  'https://employee-attendance-management-system-7muj.vercel.app',
+  "http://localhost:3000",
+  "https://employee-attendance-management-syst-ashy.vercel.app"
 ];
 
-app.use(cors({
-  origin: function (origin, callback) {
-    // allow Postman / server-to-server / health checks
-    if (!origin) return callback(null, true);
+// 🔍 Debug: log incoming origin
+app.use((req, res, next) => {
+  console.log("🌍 Incoming Request Origin:", req.headers.origin);
+  next();
+});
 
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('CORS not allowed from this origin'));
-    }
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow server-to-server / Postman / health checks
+      if (!origin) return callback(null, true);
 
-app.options('*', cors());
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      console.error("❌ CORS Blocked Origin:", origin);
+      return callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"]
+  })
+);
 
 /* =======================
    MIDDLEWARE
@@ -42,39 +51,41 @@ app.use(express.json());
 ======================= */
 const MONGODB_URI = process.env.MONGODB_URI;
 
-mongoose.connect(MONGODB_URI)
+mongoose
+  .connect(MONGODB_URI)
   .then(() => {
-    console.log('✅ MongoDB connected');
+    console.log("✅ MongoDB connected");
   })
-  .catch(err => {
-    console.error('❌ MongoDB connection error:', err.message);
+  .catch((err) => {
+    console.error("❌ MongoDB connection error:", err.message);
   });
 
 /* =======================
    ROUTES
 ======================= */
-app.use('/api/auth', require('./routes/authRoutes'));
-app.use('/api/employees', require('./routes/employeeRoutes'));
-app.use('/api/departments', require('./routes/departmentRoutes'));
-app.use('/api/leaves', require('./routes/leaveRoutes'));
-app.use('/api/salaries', require('./routes/salaryRoutes'));
-app.use('/api/attendance', require('./routes/attendanceRoutes'));
+app.use("/api/auth", require("./routes/authRoutes"));
+app.use("/api/employees", require("./routes/employeeRoutes"));
+app.use("/api/departments", require("./routes/departmentRoutes"));
+app.use("/api/leaves", require("./routes/leaveRoutes"));
+app.use("/api/salaries", require("./routes/salaryRoutes"));
+app.use("/api/attendance", require("./routes/attendanceRoutes"));
 
 /* =======================
    DEFAULT ROUTES
 ======================= */
-app.get('/', (req, res) => {
+app.get("/", (req, res) => {
   res.json({
-    message: 'Employee Attendance Management System API',
-    version: '1.0.0',
-    status: 'Running'
+    message: "Employee Attendance Management System API",
+    version: "1.0.0",
+    status: "Running"
   });
 });
 
-app.get('/api/health', (req, res) => {
+app.get("/api/health", (req, res) => {
   res.json({
-    status: 'OK',
-    database: mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected',
+    status: "OK",
+    database:
+      mongoose.connection.readyState === 1 ? "Connected" : "Disconnected",
     time: new Date().toISOString()
   });
 });
@@ -83,6 +94,7 @@ app.get('/api/health', (req, res) => {
    SERVER
 ======================= */
 const PORT = process.env.PORT || 5000;
+
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
